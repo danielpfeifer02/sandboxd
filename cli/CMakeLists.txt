@@ -7,6 +7,7 @@ add_executable(sbx
 
 target_link_libraries(sbx
     sandbox
+    logger
 )
 
 # Install the binary

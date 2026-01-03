@@ -1,10 +1,22 @@
+#include "logging/logger.hpp"
+#include "sandbox/sandbox.hpp"
 #include <iostream>
 
 int main(int argc, char** argv) {
-    std::cout << "Running sandbox with arguments: ";
-    for (int i = 0; i < argc; i++) {
-        std::cout << argv[i] << ' ';
+    Logger::instance().set_level(Logger::Level::Debug);
+
+    std::string rawCmd = argv[1];
+    for (int i = 2; i < argc; i++) {
+        rawCmd += " " + std::string(argv[i]);
     }
-    std::cout << std::endl;
+    LOG_INFO("main", "Starting sandbox-cli");
+
+    try {
+        Sandbox sandbox(SandboxConfig{ .sandbox_id = "sandbox-1" });
+        sandbox.Run(rawCmd);
+    } catch (const std::exception& e) {
+        LOG_ERROR("main", "Error starting sandbox: {}", e.what());
+        return 1;
+    }
     return 0;
 }

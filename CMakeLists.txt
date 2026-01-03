@@ -21,7 +21,11 @@ include_directories(
     ${CMAKE_SOURCE_DIR}
 )
 
+# Add spdlog submodule BEFORE logging (so logging can link to it)
+add_subdirectory(x_spdlog)
+
 # Source directories
+add_subdirectory(logging)
 add_subdirectory(sandbox)
 add_subdirectory(cli)
 # add_subdirectory(daemon)  # Will be added in later weeks
