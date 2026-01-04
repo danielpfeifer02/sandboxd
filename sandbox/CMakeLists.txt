@@ -9,4 +9,4 @@ target_include_directories(sandbox PUBLIC
     ${CMAKE_SOURCE_DIR}
 )
 
-target_link_libraries(sandbox PRIVATE logger)
+target_link_libraries(sandbox PRIVATE logger seccomp)

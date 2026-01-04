@@ -1,5 +1,6 @@
 #include "logging/logger.hpp"
 #include "sandbox/sandbox.hpp"
+#include "sandbox/policy.hpp"
 #include <iostream>
 
 using namespace Sandboxd;
@@ -23,8 +24,11 @@ int main(int argc, char** argv) {
     }
     LOG_INFO("main", "Starting sandbox-cli");
 
+    Sandbox::Types::SandboxConfig sandboxConfig = Sandbox::Policy::ParsePolicyFile(argv[1]);
+    Sandbox::Policy::ConfigureSeccomp(sandboxConfig);
+
     try {
-        Sandbox::Sandbox sandbox(Sandbox::Types::SandboxConfig{ .sandbox_id = "sandbox-1" });
+        Sandbox::Sandbox sandbox(sandboxConfig);
         sandbox.Run(rawCmd);
     } catch (const std::exception& e) {
         LOG_ERROR("main", "Error starting sandbox: {}", e.what());
