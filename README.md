@@ -8,7 +8,7 @@
 
 1. **sandboxd** (daemon): Creates and manages sandboxes, tracks lifecycle, kills on timeout/OOM
 2. **sbx run** (CLI): Submits jobs, streams stdout/stderr, returns structured results
-3. **Policy format** (JSON/TOML/YAML): Declarative configuration describing security boundaries
+3. **Policy format** (YAML): Declarative configuration describing security boundaries
 
 ## Architecture
 
@@ -58,7 +58,7 @@ The sandbox implements defense-in-depth through multiple Linux security primitiv
 
 ## Policy Format
 
-The policy format (JSON/TOML/YAML) describes:
+The policy format (YAML) describes:
 
 ```yaml
 # Example policy structure

@@ -21,7 +21,7 @@ Establish basic process isolation by implementing the foundational CLI and sandb
   - [x] Create directory layout: `daemon/`, `cli/`, `sandbox/`, `tests/`, `docs/`, `examples/`
   - [x] Set up build system (CMake or Makefile)
   - [x] Configure C++ compiler flags (C++23, warnings enabled)
-  - [ ] Create basic project configuration files
+  - [x] Create basic project configuration files
 - [ ] Write threat model document (`docs/THREAT_MODEL.md`):
   - [ ] Document what we defend against (process escape, privilege escalation, resource exhaustion, syscall abuse, filesystem access, network access)
   - [ ] Document non-goals (kernel exploits, hardware attacks, side-channel attacks, full container runtime)

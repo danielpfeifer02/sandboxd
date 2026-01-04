@@ -2,7 +2,9 @@
 #include "logging/logger.hpp"
 #include <iostream>
 
-Sandbox::Sandbox(const SandboxConfig& config)
+namespace Sandboxd::Sandbox {
+
+Sandbox::Sandbox(const Types::SandboxConfig& config)
     : mConfig(config)
 {
     // TODO: Initialize sandbox resources (if needed)
@@ -22,4 +24,6 @@ void Sandbox::Run(const std::string& command)
     // TODO: Run command
 
     LOG_DEBUG(mConfig.sandbox_id, "Finished running command '{}'", command);
+}
+
 }

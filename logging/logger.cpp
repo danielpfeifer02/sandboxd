@@ -1,7 +1,8 @@
-// logger.cpp
 #include "logger.hpp"
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+
+namespace Sandboxd::Logging {
 
 class Logger::Impl {
 public:
@@ -66,4 +67,4 @@ void Logger::log(Level level, std::string_view sandbox_id,
     }
 }
 
-// Template implementations are in the header file
+}

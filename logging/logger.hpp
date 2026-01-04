@@ -1,9 +1,11 @@
-// logger.hpp
 #pragma once
+
 #include <string>
 #include <string_view>
 #include <memory>
 #include <spdlog/fmt/bundled/format.h>  // Use spdlog's bundled fmt for templates
+
+namespace Sandboxd::Logging {
 
 class Logger {
 public:
@@ -60,9 +62,11 @@ private:
     std::unique_ptr<Impl> pImpl;
 };
 
+}
+
 // Convenience macros that call Logger methods directly
 // spdlog handles level checking internally
-#define LOG_DEBUG(id, ...) Logger::instance().debug(id, __VA_ARGS__)
-#define LOG_INFO(id, ...)  Logger::instance().info(id, __VA_ARGS__)
-#define LOG_WARN(id, ...)  Logger::instance().warn(id, __VA_ARGS__)
-#define LOG_ERROR(id, ...) Logger::instance().error(id, __VA_ARGS__)
+#define LOG_DEBUG(id, ...) Logging::Logger::instance().debug(id, __VA_ARGS__)
+#define LOG_INFO(id, ...)  Logging::Logger::instance().info(id, __VA_ARGS__)
+#define LOG_WARN(id, ...)  Logging::Logger::instance().warn(id, __VA_ARGS__)
+#define LOG_ERROR(id, ...) Logging::Logger::instance().error(id, __VA_ARGS__)
