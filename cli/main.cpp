@@ -15,6 +15,12 @@ void ValidateArguments(int argc, char** argv)
 
 int main(int argc, char** argv) {
     Logging::Logger::instance().set_level(Sandboxd::Logging::Logger::Level::Debug);
+    Logging::Logger::instance().enable_file_logging("sandbox.log");
+
+    LOG_DEBUG("main", "Debug message");
+    LOG_INFO("main", "Info message");
+    LOG_WARN("main", "Warn message");
+    LOG_ERROR("main", "Error message");
 
     ValidateArguments(argc, argv);
     
@@ -22,17 +28,9 @@ int main(int argc, char** argv) {
     for (int i = 2; i < argc; i++) {
         rawCmd += " " + std::string(argv[i]);
     }
-    LOG_INFO("main", "Starting sandbox-cli");
+    LOG_INFO("main", "Starting sandbox-cli", getpid());
 
     Sandbox::Types::SandboxConfig sandboxConfig = Sandbox::Policy::ParsePolicyFile(argv[1]);
-    Sandbox::Policy::ConfigureSeccomp(sandboxConfig);
-
-    try {
-        Sandbox::Sandbox sandbox(sandboxConfig);
-        sandbox.Run(rawCmd);
-    } catch (const std::exception& e) {
-        LOG_ERROR("main", "Error starting sandbox: {}", e.what());
-        return 1;
-    }
-    return 0;
+    Sandbox::Sandbox sandbox(sandboxConfig);
+    return sandbox.Run(argc-1, &argv[1]);
 }

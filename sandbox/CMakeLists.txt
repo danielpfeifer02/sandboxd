@@ -3,6 +3,7 @@
 
 add_library(sandbox STATIC
     sandbox.cpp
+    policy.cpp
 )
 
 target_include_directories(sandbox PUBLIC

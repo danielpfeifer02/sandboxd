@@ -1,16 +1,27 @@
 #include "logger.hpp"
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <algorithm>
 
 namespace Sandboxd::Logging {
+
+static const std::string default_pattern = "[%Y-%m-%d %H:%M:%S] \t[ %^%l%$\t] %v";
 
 class Logger::Impl {
 public:
     std::shared_ptr<spdlog::logger> logger;
+    std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> console_sink;
+    std::shared_ptr<spdlog::sinks::basic_file_sink_mt> file_sink;
     
     Impl() {
-        logger = spdlog::stdout_color_mt("sandbox");
-        logger->set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v");
+        // Create console sink
+        console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        console_sink->set_pattern(default_pattern);
+        
+        // Create logger with console sink
+        logger = std::make_shared<spdlog::logger>("sandbox", console_sink);
+        logger->set_pattern(default_pattern);
     }
 };
 
@@ -48,22 +59,48 @@ bool Logger::should_log(Level level) const {
     return static_cast<int>(level) >= static_cast<int>(get_level());
 }
 
-void Logger::log(Level level, std::string_view sandbox_id, 
+void Logger::log(Level level, std::string_view sandboxId, 
                  std::string_view message) {
     // Convert to string only when needed (spdlog will handle it efficiently)
     switch(level) {
         case Level::Debug: 
-            pImpl->logger->debug("[sandbox_id={}] {}", sandbox_id, message);
+            pImpl->logger->debug("[sandboxId={}\t] [Process={}] {}", sandboxId, getpid(), message);
             break;
         case Level::Info:  
-            pImpl->logger->info("[sandbox_id={}] {}", sandbox_id, message);
+            pImpl->logger->info("[sandboxId={}\t] [Process={}] {}", sandboxId, getpid(), message);
             break;
         case Level::Warn:  
-            pImpl->logger->warn("[sandbox_id={}] {}", sandbox_id, message);
+            pImpl->logger->warn("[sandboxId={}\t] [Process={}] {}", sandboxId, getpid(), message);
             break;
         case Level::Error: 
-            pImpl->logger->error("[sandbox_id={}] {}", sandbox_id, message);
+            pImpl->logger->error("[sandboxId={}\t] [Process={}] {}", sandboxId, getpid(), message);
             break;
+    }
+}
+
+void Logger::enable_file_logging(const std::string& filepath, bool truncate) {
+    try {
+        // Create file sink
+        pImpl->file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(filepath, truncate);
+        pImpl->file_sink->set_pattern(default_pattern);
+        
+        // Add file sink to logger (logger now has both console and file)
+        pImpl->logger->sinks().push_back(pImpl->file_sink);
+    } catch (const spdlog::spdlog_ex& ex) {
+        // Log error to console if file logging fails
+        pImpl->logger->error("Failed to enable file logging: {}", ex.what());
+    }
+}
+
+void Logger::disable_file_logging() {
+    if (pImpl->file_sink) {
+        // Remove file sink from logger
+        auto& sinks = pImpl->logger->sinks();
+        sinks.erase(
+            std::remove(sinks.begin(), sinks.end(), pImpl->file_sink),
+            sinks.end()
+        );
+        pImpl->file_sink.reset();
     }
 }
 

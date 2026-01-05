@@ -11,7 +11,7 @@ public:
     Sandbox(const Types::SandboxConfig& config);
     ~Sandbox();
 
-    void Run(const std::string& command);
+    int Run(int argc, char* argv[]);
 
 private:
     Types::SandboxConfig mConfig;

@@ -17,42 +17,46 @@ public:
     void set_level(Level level);
     Level get_level() const;
     
+    // File logging
+    void enable_file_logging(const std::string& filepath, bool truncate = false);
+    void disable_file_logging();
+    
     // Check if level is enabled (for lazy evaluation)
     bool should_log(Level level) const;
     
     // Basic log - string_view avoids copies
-    void log(Level level, std::string_view sandbox_id, 
+    void log(Level level, std::string_view sandboxId, 
              std::string_view message);
     
     // Formatted log - perfect forwarding, format only if enabled
     template<typename... Args>
-    void log(Level level, std::string_view sandbox_id, 
+    void log(Level level, std::string_view sandboxId, 
              std::string_view fmt, Args&&... args) {
         // Format happens here - args are forwarded, no copies
         // Use spdlog's bundled fmt
         std::string formatted = ::fmt::format(::fmt::runtime(fmt), std::forward<Args>(args)...);
-        log(level, sandbox_id, formatted);
+        log(level, sandboxId, formatted);
     }
     
     // Convenience methods
     template<typename... Args>
-    void debug(std::string_view sandbox_id, std::string_view fmt, Args&&... args) {
-        log(Level::Debug, sandbox_id, fmt, std::forward<Args>(args)...);
+    void debug(std::string_view sandboxId, std::string_view fmt, Args&&... args) {
+        log(Level::Debug, sandboxId, fmt, std::forward<Args>(args)...);
     }
     
     template<typename... Args>
-    void info(std::string_view sandbox_id, std::string_view fmt, Args&&... args) {
-        log(Level::Info, sandbox_id, fmt, std::forward<Args>(args)...);
+    void info(std::string_view sandboxId, std::string_view fmt, Args&&... args) {
+        log(Level::Info, sandboxId, fmt, std::forward<Args>(args)...);
     }
     
     template<typename... Args>
-    void warn(std::string_view sandbox_id, std::string_view fmt, Args&&... args) {
-        log(Level::Warn, sandbox_id, fmt, std::forward<Args>(args)...);
+    void warn(std::string_view sandboxId, std::string_view fmt, Args&&... args) {
+        log(Level::Warn, sandboxId, fmt, std::forward<Args>(args)...);
     }
     
     template<typename... Args>
-    void error(std::string_view sandbox_id, std::string_view fmt, Args&&... args) {
-        log(Level::Error, sandbox_id, fmt, std::forward<Args>(args)...);
+    void error(std::string_view sandboxId, std::string_view fmt, Args&&... args) {
+        log(Level::Error, sandboxId, fmt, std::forward<Args>(args)...);
     }
     
 private:
