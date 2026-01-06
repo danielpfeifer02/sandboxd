@@ -8,6 +8,7 @@ namespace Sandboxd::Sandbox::Types {
 struct SandboxConfig
 {
     std::string sandboxId;
+    char outside_ns_id[64] = {0};
 };
 
 }

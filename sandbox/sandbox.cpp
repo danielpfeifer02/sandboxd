@@ -22,6 +22,12 @@ int Sandbox::Run(int argc, char* argv[])
 {
     LOG_DEBUG(mConfig.sandboxId, "Starting to run sandbox");
 
+    ssize_t len = readlink("/proc/self/ns/mnt", mConfig.outside_ns_id, sizeof(mConfig.outside_ns_id) - 1);
+    if (len < 0) {
+        LOG_ERROR(mConfig.sandboxId, "Failed to read outside mount namespace ID: {}", strerror(errno));
+        return 1;
+    }
+
     pid_t pidLauncher = fork();
     if (pidLauncher == -1) {
         LOG_ERROR(mConfig.sandboxId, "Failed to fork: {}", strerror(errno));
@@ -46,6 +52,10 @@ int Sandbox::Run(int argc, char* argv[])
 
         if (child == 0) {
             // --- SANDBOXED GRANDCHILD (PID 1 inside PID namespace) ---
+
+            // Configure mounts AFTER forking into PID namespace
+            // This ensures procfs is mounted in the context of PID 1
+            Policy::ConfigureMounts(mConfig);
 
             // 4) Install seccomp LAST (after all setup)
             // - seccomp()
