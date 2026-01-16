@@ -1,0 +1,68 @@
+# sandboxd Policy Configuration
+# This file defines the security boundaries and resource limits for a sandbox
+
+# Filesystem mounts configuration
+mounts:
+  # Allowed bind mounts from host (read-only by default)
+  allowed:
+    - source: /usr
+      target: /usr
+      readonly: true
+    - source: /lib
+      target: /lib
+      readonly: true
+    - source: /lib64
+      target: /lib64
+      readonly: true
+    - source: /bin
+      target: /bin
+      readonly: true
+  
+  # Writable directories (tmpfs or overlayfs)
+  writable_dirs:
+    - /tmp          # tmpfs for temporary files
+    - /workspace    # optional: overlayfs for workspace (if needed)
+
+# Network configuration
+network:
+  enabled: false    # default: no network access
+  allowlist: []     # optional: list of allowed hosts/ports
+
+# Resource limits (cgroups v2)
+resources:
+  memory_max: "512M"      # Maximum memory (supports K, M, G suffixes)
+  cpu_max: "1.0"          # CPU bandwidth limit (1.0 = 100% of one core)
+  pids_max: 100           # Maximum number of processes
+  io_max: "10M"           # Optional: I/O bandwidth limit
+  timeout: "30s"          # Wall-clock timeout (supports s, m, h)
+
+# Syscall filtering (seccomp-bpf)
+syscall_policy:
+  profile: "default"      # Profile name: "default", "compile", "run", "python"
+  mode: "allowlist"       # "allowlist" or "user-notify" (advanced)
+  
+  # Optional: custom syscall allowlist (if not using profile)
+  # allowed_syscalls:
+  #   - read
+  #   - write
+  #   - open
+  #   - close
+
+# User namespace configuration
+user_namespace:
+  enabled: true
+  map_root_to_uid: 1000   # Map root (UID 0) inside to this UID on host
+  map_root_to_gid: 1000   # Map root (GID 0) inside to this GID on host
+
+# Capabilities to drop
+capabilities:
+  drop_all: true          # Drop all capabilities by default
+  # Or specify which to keep:
+  # keep:
+  #   - CAP_NET_BIND_SERVICE
+
+# Additional security settings
+security:
+  no_new_privs: true      # PR_SET_NO_NEW_PRIVS: prevent privilege escalation
+  seccomp_enabled: true   # Enable seccomp filtering
+
